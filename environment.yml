@@ -1,0 +1,21 @@
+name: hems-rlpy
+dependencies:
+  - python=3.10
+  - matplotlib
+  - numpy<2.0.0
+  - pandas
+  - pip
+  - pip:
+    - gymnasium
+    - optuna
+    - pre-commit
+    - stable-baselines3
+    - torch
+    - pytest
+    - tensorboard
+  - seaborn
+  - tqdm
+  - structlog
+
+channels:
+  - conda-forge

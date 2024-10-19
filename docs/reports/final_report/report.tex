@@ -1,0 +1,149 @@
+\documentclass[]{report} % Import report.cls
+% ----------------------------------------------------------------------------
+
+% Document Encodings
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Graphics
+\usepackage{graphicx}
+\usepackage[section]{placeins}
+\graphicspath{{./imgs/}}
+
+% Mathematic Symbols
+\usepackage{amsthm, amsmath, amssymb, amsfonts, bbm, mathrsfs }
+
+%bibliography
+\usepackage[square,numbers]{natbib}
+\usepackage[nottoc]{tocbibind} % reference in table of contents
+\bibliographystyle{abbrvnat}
+
+\usepackage{caption, subcaption} % figure captions
+\usepackage{listings}
+\lstset{
+	language=Python,
+	frame=single,
+	label={lst:params}
+}
+
+% Miscellaneous
+\usepackage{setspace} % For using single or double spacing
+\usepackage{fancyhdr} % For the headers
+\usepackage{longtable} % Tables that can span several pages
+\usepackage{hyperref} % Adds clickable links at references
+
+
+% Hide chapter Numbers
+\usepackage{titlesec}
+\titleformat{\chapter}[display] {\Large\bfseries\centering} {} {1pt} {\huge }           % before-code
+
+% ----------------------------------------------------------------------------
+% Begin Document
+% ----------------------------------------------------------------------------
+\begin{document}
+
+\pagestyle{empty}
+\frontmatter % Use roman page numbering  ( i,ii, iii, ... )
+
+% Project Title
+% ............................................................................
+\begin{titlepage}
+	\begin{center}
+		\vfill
+		
+		%{\huge \scshape Kiel University of Applied Science }\\[0.5cm]
+		%\rule{\textwidth}{1pt}\\[0cm]
+		
+		% FH LOGO
+		% ---------------------------------
+		%\FloatBarrier
+		\begin{figure}[h]
+			\centering \includegraphics[width=\textwidth]{fh_kiel_logo.png}
+		\end{figure}
+		%\FloatBarrier
+		\rule{\textwidth}{1pt}\\[0cm]
+		% ---------------------------------
+		
+		\center \huge{MS. Information Engineering(MIE), IuE}
+		
+		\vspace*{1.5\baselineskip}
+		
+		\center \Large{ \textbf{Date:} 05 August 2024}\\[1.0cm]
+		
+		\rule{\textwidth}{0.5pt}\\[0cm]
+		{\huge \bfseries {Training Prosumer Agents with Reinforcement Learning for Energy and Cost Optimization } \par \ }\\[-0.5cm]
+		\rule{\textwidth}{1.5pt}\\[1cm]
+		
+		\center \Large{ \textbf{\underline{In cooperation with}} \\[0.3cm] Forschungsstelle für Energiewirtschaft e. V.}\\[1.5cm]
+		
+		\hfill \large \textbf{\underline{Submitted by}}\\[0.3cm] \hfill
+		\hfill  {\large \text{Sudesh Acharya}}\\ [0.1cm]
+		\hfill  {\large{Mat. Nr. : 932253}}\\ [1.5cm]
+		
+		\hfill \large \textbf{\underline{Under the Supervison of}}\\[0.3cm]
+		\hfill  {\large \text{Prof. Dr. Hauke Schramm}}\\ [0.1cm]
+		\hfill  {\large \text{Mr. Vincenz Regener(FfE e.V.)}}\\ [0.1cm]
+		
+		
+	\end{center}
+\end{titlepage}
+
+\begin{titlepage}
+	\begin{center}
+		\vspace*{\fill}
+		{\large \textit{Submitted as Master Thesiswork for the partial fulfillment of M.S. in Information Engineering, IuE, University of Applied Science, Kiel}}\\[1cm]
+		\vspace*{\fill}
+	\end{center}
+\end{titlepage}
+
+% Blank page
+\shipout\null \stepcounter{page}
+
+% Preambles
+% ............................................................................
+\startpreamble
+
+
+\input{preambles/abstract}
+\input{preambles/acknowledgements}
+
+% Table of Contents
+% .................................... ........................................
+\unnumberedchapter{Contents}
+\tableofcontents % Write out the Table of Contents
+
+
+% Contents
+% ............................................................................
+\addtocontents{toc}{\vspace{2em}}
+\mainmatter % Begin numeric page numbering ( 1, 2, ... )
+
+\input{contents/introduction}
+
+\numberedchapter
+\input{contents/methodology}
+\input{contents/development}
+\input{contents/observations}
+
+\unnumberedchapter{Conclusion}
+\input{contents/conclusion}
+
+\unnumberedchapter{Supplementary Observations}
+\input{contents/supplementary}
+
+\unnumberedchapter{List of Figures and Tables}
+\input{contents/listoffigures}
+
+% Bibliography
+% ............................................................................
+
+\begin{thebibliography}{9}
+\input{preambles/bibliography} 
+\end{thebibliography}
+
+\end{document}
+
+% ----------------------------------------------------------------------------
+% End of Document
+% ----------------------------------------------------------------------------

@@ -1,0 +1,13 @@
+gymnasium
+matplotlib
+numpy
+optuna
+pandas
+pre-commit
+pytest
+seaborn
+stable-baselines3
+structlog
+tensorboard
+torch
+tqdm

@@ -1,0 +1,16 @@
+\chapter*{Conclusion and Further Work} \label{ch-5}  % Name of the unnumbered section
+% ------------------------------------------------------------------------------------
+\begin{large}
+
+\vspace*{3\baselineskip}
+
+This work primarily focused on exploration and usage of RL based methods to find control strategies within a Prosumer household in an effort to minimize cost of energy usage. \\
+
+To address the first research question of how a Prosumer agent is modeled using RL, an experimental platform was implemented using customized simulated HEMS environment and through iterative evaluation and improvement, policy for an Agents actions were modeled. The second question of effective minimization of cost of energy under time-variable tariffs was demonstrated by the test of the agents policy on unseen set of inputs as shown in \ref{table:comparison_variable_ap}. To test out the choice of algorithm and it's impact on performance and efficiency of the control system was also demonstrated with exploration algorithm that are on and off-policy. The off-policy algorithms TD3 and SAC are perfoming better in each of the three scenarion of cost optimization under constant energy exchange price, under variable exchange price  and combined objective under variable price with fractional soc retain. Finally, the key factors influencing the optimal control strategies were identified as the selection of RL algorithm, usage of suitable parameters such as size of observation window, number of hidden layers and number of hidden layer in each unit of the Actor, Value and Q network, and contribution of other model specific parameters such as reward discounting, constraint on policy update. Since small change in value of one parameter causes drastic change in behavior of RL based agent due to the sensitivity  of these algorithms, it is often the case of trial and improvement as in the case of most of deep neural network based algorithm. \\
+
+In conclusion, this work demonstrates progressive improvement in performance of RL algorithm, starting from randomly initialized network, learning in different set of observation input setting and performing with significant score on the defined objective. \\
+
+Further improvement can be made to include multi objective reward optimization, searching for more optimal parameters and inclusion of more input features and separate action space for EVSE and Household battery charger.
+
+\end{large}
+% ------------------------------------------------------------------------------------

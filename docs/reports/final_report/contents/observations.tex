@@ -1,0 +1,190 @@
+\chapter{Observations} \label{ch-4}
+
+\begin{large}
+
+This section reports the observed results, during training, testing and derived net grid exchange cost from action sampled given trained policy. The dataset was split into training and test set with the ratio of 90\% and 10\% respectively. The custom environment was setup in such a way that it takes window of observation input of $2$ weeks length and shuffles the train set uniformly randomly to get different set of input observation for next iteration. Discount factor for the model were kept $0.99$ for all models\\
+
+\section{Parameters}
+
+There exists plethora of combination of hyper-parameters that can be searched and tested further to improve current policy. List \ref{lst:params} shows a set of model hyper-parameter settings under which the observations are collected during training and testing of the policy.\\
+
+\begin{lstlisting}
+env_observation_window_train=int(24 * 4 * 7 * 2)
+policy_nw="MlpPolicy"
+num_train_eval_cycles=200
+num_eval_episodes_per_cycle=2
+num_test_episodes=5
+train_timesteps=env_observation_window_train * 2
+ppo_learning_rate=0.0003
+ppo_clip_range=0.20
+ppo_nws={"pi": [64, 64, 16], "vf": [64, 64, 16]} 
+sac_learning_rate=0.0003
+sac_tau=0.005
+sac_nws={"pi": [256, 256, 16], "qf": [256, 256, 16]}
+td3_learning_rate=0.001
+td3_tau=0.005
+td3_nws={"pi": [128, 128, 16], "qf": [128, 128, 16]}
+\end{lstlisting}
+
+
+\section{Observation during Train/Evaluation Cycle}
+
+Observation were recorded for optimization of perceived cost per episode for constant and variable auction price as described in the section below. A combined objective was also recorded with cost based reward and reward for retaining fraction of SoC in a battery. Observations for the combined objective are included as part of supplementary observation \ref{ch-5} \\
+
+\subsection*{With constant exchange rate}
+
+The performance of a policy during training is measured using the cost optimized by each algorithm. The networks were each trained for $200$ cycle of training and for each training, $2$ iteration of evaluation was performed and average was taken as a performance score for that iteration. The metrics recorded and visualized for optimization under constant tariff for grid feed and draw rate of $0.08$ and $0.33$ Eur/kWh respectively as shown in figure \ref{fig:cost_compare_constant_ap}. \\
+
+% with constant auction price
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/constant_ap/comparison_ppo_sac_td3.png}
+		\caption{ \textit{Cost reward evaluation per episode with constant auction price} }
+		\label{fig:cost_compare_constant_ap}
+	\end{center}
+\end{figure}
+
+% retrained ppo
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/constant_ap/comparison_ppo_retrain.png}
+		\caption{ \textit{Cost reward evaluation per episode with retrained PPO} }
+		\label{fig:cost_compare_constant_ap_ppo_retrain}
+	\end{center}
+\end{figure}
+
+With perceived saved cost in relation to number of train-evaluation cycle, the comparison of cost is higher for TD3, SAC has more consistency over all with early positive trend. The PPO however is fluctuating and does not seem to plateau until the end of $200^{th}$ cycle. Upon further retraining for $200$ more cycles, it is improved, showing consistent value as shown in the figure \ref{fig:cost_compare_constant_ap_ppo_retrain}. One of the reason for PPO to learn relatively slowly is due to the slow update of the network parameters based on sample collected under current policy, since it is on-policy algorithm. In contrast, TD3 and SAC which are off-policy therefore more sample efficient. \\
+
+\subsection*{With variable exchange rate}
+
+The same cost based metrics were tracked for comparison with variable auction price dataset. Unlike under constant exchange rate price the feed in and draw from the grid is a same rate. The evaluated perceived cost saving per episode for variable auction price is shown in figure \ref{fig:cost_compare_variable_ap} \\ 
+
+
+% with variable auction price
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/variable_ap/comparison_ppo_sac_td3.png}
+		\caption{ \textit{Cost reward evaluation per episode with variable auction price} }
+		\label{fig:cost_compare_variable_ap}
+	\end{center}
+\end{figure}
+
+The PPO is retrained also in the case of model with variable exchange cost and shows improvements after $200^{th}$ iteration. Although there seems to be a small trend at the end of the $200$ cycle of retraining and evaluation, no further training was done. The retrained ppo with evaluation score is shown in figure\ref{fig:cost_compare_ap_ppo_retrain} \\
+
+% retrained ppo
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/variable_ap/comparison_ppo_retrain.png}
+		\caption{ \textit{Cost reward evaluation per episode with retrained PPO} }
+		\label{fig:cost_compare_ap_ppo_retrain}
+	\end{center}
+\end{figure}
+
+\section{Observation during Testing}
+
+This section shows an agents experience on untrained dataset. In correspondence to the scenario of constant and variable auction price discussed in observation during training, the performance of a model was calculated for observation input window of A week(24*4*7 time steps). In addition, for the same window cost is computed for rule based strategy for comparison. \\
+
+\subsection*{with Constant Exchange rate}
+
+The experience of an agent under constant auction price for rule based strategy can be seen in figure \ref{fig:test_compare_constant_ap_rbc}. The effect of variable PV generation directly corresponds to the action(i.e. charging during pv generation) and consequent change in battery SoC. \\
+
+% rbc
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/constant_ap/rbc/rbc_comparison.png}
+		\caption{ \textit{Rule based policy with constant auction price} }
+		\label{fig:test_compare_constant_ap_rbc}
+	\end{center}
+\end{figure}
+
+% td3
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/constant_ap/td3/test/td3_rbc_comparison.png}
+		\caption{ \textit{TD3 with constant auction price} }
+		\label{fig:test_compare_constant_ap_td3}
+	\end{center}
+\end{figure}
+
+RL based agent with TD3 under the same scenario of constant auction price is shown in figure \ref{fig:test_compare_constant_ap_td3}. The reflection of variable PV generation corresponds to small change in action and the SoC however, the average cost saving in higher. Looking into the grid exchange component in the subplot, the agent has learned to save cost by selling  all the energy back to the grid, as indicated by the negative grid exchange . \\
+
+\begin{table}
+	\begin{center}
+		\begin{tabular}{ccccc} 
+			\hline % -------------------------------------------------------------
+			\vspace{0.5pt} \\
+			\textbf{Model Config} & \textbf{PPO} & \textbf{SAC} & \textbf{TD3} & \textbf{RBP} \\ % Header
+			\hline % -------------------------------------------------------------
+			\vspace{0.5pt} \\
+			\textbf{Untrained} & 54.405 & 54.417  & 54.405 & 0.0 \\
+			\textbf{Constant AP} & 242.696 & 255.239  & \textbf{314.556}  & 312.382 \\
+			\textbf{Constant AP with PPO retrained} & 272.971 & -  & -  & - \\
+			\hline % -------------------------------------------------------------
+		\end{tabular}
+		\caption{Comparison per policy with constant exchange rate }
+		\label{table:comparison_constant_ap} % Label for referencing the table 
+	\end{center}
+\end{table}
+
+Comparison of cost based score for RL based and Rule based methods is shown is the table \ref{table:comparison_constant_ap}. TD3 model has learned to optimize the cost more effectively than the other RL based algorithm and slightly better than the rule based strategy. \\  
+
+% rbc
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/variable_ap/rbc/rbc_comparison.png}
+		\caption{ \textit{Rule based policy with variable auction price} }
+		\label{fig:test_compare_variable_ap_rbc}
+	\end{center}
+\end{figure}
+
+\subsection*{with Variable Exchange rate}
+
+With variable auction price as part of observation input, rule based strategy has similar results as shown in figure \ref{fig:test_compare_variable_ap_rbc}. Since the exchange rate has changed and there is no complex modeling of variability, the change is apparent only in the net cost of exchange computation relative to rbc with constant price. \\ 
+
+% sac energy 
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/variable_ap/sac/test/sac_rbc_comparison.png}
+		\caption{ \textit{SAC with variable auction price} }
+		\label{fig:test_compare_variable_ap_sac}
+	\end{center}
+\end{figure}
+
+As shown in the figure \ref{fig:test_compare_variable_ap_sac}, SAC has learned to optimize it behavior based on variable auction price as well with the spike in charging action, when the energy cost is $0$ and discharges immediately when the exchange price is higher. In rest of the cases it chooses to sell all the energy for cost profit, since there is no constraint, neither incentive on keeping the energy. \\
+
+\begin{table}
+	% ------------------------------------------------------------------------------
+	\begin{center}
+		\begin{tabular}{ccccc} 
+			\hline % -------------------------------------------------------------
+			\vspace{0.5pt} \\
+			\textbf{Model Config} & \textbf{PPO} & \textbf{SAC} & \textbf{TD3} & \textbf{RBP} \\ % Header
+			\hline % -------------------------------------------------------------
+			\vspace{0.5pt} \\
+			\textbf{Untrained} & 91.371 & 91.371  & 91.371  & 0.0 \\
+			\textbf{Variable AP} & 459.578 & \textbf{601.228}  & 297.622  & 140.857 \\
+			\textbf{Variable AP wit PPO retrained} & 453.212 & -  & -  & - \\
+			\hline % -------------------------------------------------------------
+		\end{tabular}
+		\caption{Comparison of performance per policy with variable exchange rate}
+		\label{table:comparison_variable_ap} % Label for referencing the table 
+		
+	\end{center}
+\end{table}
+
+Table \ref{table:comparison_variable_ap} shows the comparison score with significant improvement of RL based algorithms, specially with SAC, taking advantage of variable exchange price, selling all possible energy to maximize the profit. Rule based strategies however has slightly lower score than with the case of constant auction price. \\
+
+With simple rule-based strategy as a baseline and score of randomly initialized untrained policy as a comparison criteria, improvement can be seen in each case whether under constant or variable exchange price. \\
+
+\section{Discussion}
+
+%expectation vs outcomes ...
+
+There were some improvement that were challenging to address in the implementation setup used to collect observation, mainly design of reward function. It was several time updated back and forth to include and improve the objectives. The combination, as in the case with retaining SoC were resulting in poor observations. The improvement achieved in this combined part is included as supplementary observation \ref{ch-6}. The results are better than random policy but in combination with cost optimization objective simultaneously not as much. Multi-objective frameworks are likely suitable to mitigate this issue. \\
+
+In addition, there were several experimentation and efforts that were made to stabilize and improve the modeling and observation of the Policy. Searching of hyper-parameters were conducted with the use of optimization libraries however, the search trial were based on running the experiment for couple of episode to calculate score. In practice there were runs that even after 100 of episodes suddenly drop their performance to close to initial policy. This led to manual trial and error starting with default values and changing and observing the results. \\
+
+In general most of the investment were made for iterative  implementation, change and experimentation of different components. 
+
+\end{large}
+

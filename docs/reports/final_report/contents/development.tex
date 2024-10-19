@@ -1,0 +1,133 @@
+
+
+\chapter{Development} \label{ch-3}
+
+% ------------------------------------------------------------------------------------
+\begin{large}
+	
+In order to experiment and collect observations on agents experience, implementation of different components defined in previous section, preparation of observation inputs, training of agents, iterative evaluation and improvement, taking feedback from different stages and re-training under set of parameter configuration, a pipeline is outlined based on flow of information as shown in figure \ref{fig:dev_pipeline}. Following subsections describe each component of the pipeline in detail.
+
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{development/pipeline.png}
+		\caption{ \textit{Development pipeline} }
+		\label{fig:dev_pipeline}
+	\end{center}
+\end{figure}
+
+Scoping defines development criteria for environment components, initialization parameters, metrics to track for the model performance and define a comparable baseline based on rule-based conditionals. Data processing step involves extraction, transformation, and merging dataset to prepare observation inputs for the environment. Train-evaluation involves steps required for modeling of a policy and saving intermediate/final results for inference. Testing involves sampling of action from the saved policy. Final step involves export of saved policy and sets up a prototypical scenario for a real world HEMS control.
+
+\section{Scoping}
+
+Based on the objectives identified and research question discussed in introduction section, the scope for environment development, selection of features, modeling of policies and sample testing from a modeled policy is determined. The custom environment setup requires definition of observation and action space, step function for step transition in the environment, definition of reward objective, and resetting methods for every time environment step is initiated(i.e. resetting states to initial state). Following list outlines scoping of components \\
+
+\begin{itemize}
+	\item \textbf{Observation space}: range of each observation input features is scoped within the maximum and minimum values of the series, defining upper and lower bounds respectively. 
+	\item \textbf{Action space}: similar to observation space, action space is defined, i.e. $a \in (-11, 11) \forall a \in A$. During implementation the range is set to $(-1, 1)$ and is later scaled during step transition in an environment to reduce computational complexity.
+	\item \textbf{Optimization objective}: Main objective is to minimize cost using a power balance equation by computing the net exchange to the grid and applying exchange rate prices \ref{eq:costreward}. Additional objectives are battery care or retain of soc by rewarding desired threshold and discouraging when out of range as defined in equation \ref{eq:combinedreward} of methodology section.
+	\item \textbf{Metrics to track}: evaluation of performance of a model based on reward objectives during training are defined in terms of accumulation of mean episodic rewards representing the net exchange cost.
+	\item \textbf{Rule based Baseline}: in order to measure the relative performance of a given policy, a rule based policy is set as a baseline. Although the actions in rule based scenario are discrete and pre-defined in contrast to action predicting learned policies, it provides a rough cost comparison among policies. The detail pseudo code is described in the following section.
+	
+	\item \textbf{RL based Algorithms}:
+\end{itemize}
+
+\section*{Rule-based Strategy}
+
+\begin{lstlisting}
+for length 'i' of test observation window:
+  exchange = power_pv[i] + power_household[i]
+  if exchange < 0:  # excess pv
+    if battery.current_soc == 1: 
+      net_exchange = exchange + action # feed into grid
+    else:
+      action = max_charge_rate  # charge
+  else:
+    if battery.current_soc == 0:
+      net_exchange = exchange + action # draw from grid
+	else:
+	  action = max_discharge_rate # discharge
+\end{lstlisting}
+
+\section*{RL based Algorithms}
+
+PPO is an on-policy algorithm with improvement on Trust Region Policy Optimization(TRPO) \cite{trpo} and mainly deals with large update in policy, so that it does not collapse. TRPO uses KL divergence to define this constraint. PPO uses clipping based objective to achieve this constraint. Figure \ref{fig:ppo_pseudocode} shows the steps involved in learning of the policy network. Initialized with random parameters $\theta$ of for policy network and value network parameters $\phi$, it collects agents experience under policy $\pi$ and uses Stochastic Gradient Accent(SGA) to maximize clip based objective and Stochastic Gradient Descent(SGD) to minimize the value error. 
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=\textwidth]{components/ppo_pseudocode.png}
+		\caption{ \textit{Pseudo code for PPO}}
+		\label{fig:ppo_pseudocode}
+	\end{center}
+\end{figure}
+
+TD3 is off-policy algorithm based on improvement of shortcomings in  Deep Deterministic Policy Gradient(DDPG)\cite{ddpg}, of overestimating Q values leading to policy degradation. TD3 introduces identical Q-value estimators as targets with delay and policy smoothing techniques. The learning of a policy network is done by computing target Q functions and updating the parameters of using  gradient ascent and using the least of these two values mitigating overestimation as shown in figure \ref{fig:td3_pseudocode} \\
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=\textwidth]{components/td3_pseudocode.png}
+		\caption{ \textit{Pseudo code for TD3}}
+		\label{fig:td3_pseudocode}
+	\end{center}
+\end{figure}
+
+SAC is also an off-policy algorithm which uses double Q-functions as targets and policy smoothing techniques similar to TD3. It introduces entropy terms in the target networks for exploration and alternatively updates parameter using gradient descent for Q-function and gradient ascent for policy network parameters. A detailed pseudo-code for SAC is shown in figure \ref{fig:sac_pseudocode} \\
+
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=\textwidth]{components/sac_pseudocode.png}
+		\caption{ \textit{Pseudo code for SAC}}
+		\label{fig:sac_pseudocode}
+	\end{center}
+\end{figure}
+
+
+\section{Data Processing: Extract, Transform and Load(ETL)}
+
+The dataset from two different Prosumers(alias p1 and p2), containing data within time frame($2021-2022$) were used. This dataset then go through series of transformation before it is initialized within an environment as observation inputs. These transformations include combination of household and auction price dataset by concatenation, aligning and transforming sample timesteps and frequency, unit conversion and handling of missing or outlying values as shown in figure \ref{fig:dev_dataetl}. The resulting dataset is of length $70082$ including p1 and p2 each containing $35041$ entries with time index range of \textit{2021-08-15 00:00} to \textit{2022-08-15 00:00} UTC. \\
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{development/dataetl.png}
+		\caption{ \textit{Data Pre-processing} }
+		\label{fig:dev_dataetl}
+	\end{center}
+\end{figure}
+
+
+\section{Modeling: Policy Train-Evaluation Iteration}
+
+This step includes implementation of setup for learning parameters of a policy network, evaluation of performance and freezing of parameter saved as checkpoint for every step of policy evaluation-improvement iteration as shown with simplification in figure \ref{fig:dev_train_eval}. Modeling in this context refers to the optimization of policy network parameters toward the ones resulting in near intended actions. \\
+
+Training part of the iteration begins with a policy network with randomly initialized internal parameters. These parameters are updated for $i$ number of iteration in a train environment and are evaluated in an evaluation environment. An evaluation step involves $j$ number of episodes and taking an average to calculate the score. After evaluation the parameters are saved as checkpoint. The goal is to maximize this score for each passing iteration using gradient assent to update parameters. The rate of update is defined by learning rate. The iteration of training continues untill the end of specified number of train cycle with continuous evaluation score returns. Retraining involves same steps except for starting from a randomly initialized policy, it must start with checkpoint of a policy that was previously trained. The rest of the step are identical, and one could either train or retrain at a time. \\
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{development/train_eval.png}
+		\caption{ \textit{Train-evaluation iteration} }
+		\label{fig:dev_train_eval}
+	\end{center}
+\end{figure}
+
+\section{Policy Testing}
+
+This steps is completely separate from training and evaluation as it uses input observation that are not used during training in a dedicated test environment. The policy network is loaded with the updated and saved parameters form the training-evaluation iteration. Test input observation are then passed through the actor network resulting in predicted action. This action is used to compute net exchange, update battery SoC and finally to calculate total cost of net exchange per episode as described in the section \ref{ch-2}. \\
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{development/testing.png}
+		\caption{ \textit{Testing of Trained Policy} }
+		\label{fig:dev_test}
+	\end{center}
+\end{figure}
+
+\section{Model Export}
+
+This step involves export of trained model to be used as a controller outside of the simulated HEMS environment. The models exported checkpoints saved as a compressed .zip format from modeling, are converted to pytorch format by extracting the Actor network, since it is responsible for action prediction, the critic network is discarded. The saved pytorch format checkpoint are further converted to open onnx format, which can be used for serving the model using various platforms. The model are then served through api endpoints to return the action given set of observations. The model server module, written in Flask, is containerized for further deployment.  \\
+
+
+The pipeline, following the methodology, starting from conceptual scoping to sample deployment, concludes the part of development. The checkpoints from the testing section above are used to sample actions for novel set of testing set for each algorithms and observations are visualized in the next section. \\
+	
+\end{large}
+% ------------------------------------------------------------------------------------

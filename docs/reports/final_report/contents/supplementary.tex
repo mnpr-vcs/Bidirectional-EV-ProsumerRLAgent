@@ -1,0 +1,74 @@
+\chapter*{Supplementary Observations} \label{ch-6} % Name of the unnumbered section
+% ------------------------------------------------------------------------------------
+\begin{large}
+\vspace*{3\baselineskip}
+
+This is a supplementary section including optimization of multiple objectives of minimizing the net cost and retain $45\%$ of the battery soc. The observation of performance of policy during training and testing is described in this section. To retain defined amount of SoC during policy learning was implemented by encouraging the agent with the value of $0.25$, if it keeps the SoC value above $45\%$ and $-0.25$ otherwise. This value is added to the cost reward to obtain the final reward. \\
+
+\section*{Combined Reward Optimization (cost with soc retain)}
+
+The performance of a policy of all the model based on cost reward and combined reward is shown in figure \ref{fig:comparison_ppo_sac_td3_cost_soc_retain} and \ref{fig:comparison_ppo_sac_td3_combined_soc_retain} respectively. It is clear from these figures, the agent is maximizing the combined reward with higher emphasis because it achieves maximum value of around $800$. On the other hand the cost based reward only achieves maximum value around $115$. Since there is no rule based comparison for multiple rewards, the rl based models are compared among themselves by referencing the score during initialization. \\
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/soc_retain/comparison_ppo_sac_td3_cost.png }
+		\caption{ \textit{Cost reward evaluation per episode with variable auction price and soc retain} }
+		\label{fig:comparison_ppo_sac_td3_cost_soc_retain}
+	\end{center}
+\end{figure}
+
+The combined reward value has no significance by itself like cost based reward which is calculated with the energy balance equation described by \ref{eq:costreward} and actually represents net exchange cost. The combined reward dominates the cost reward with the soc retain reward value of  $\pm0.25$. Decreasing this value retains less to no soc and increasing the value only increases the combined reward at the expense of cost reward. \\
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/soc_retain/comparison_ppo_sac_td3_combined.png }
+		\caption{ \textit{Combined reward evaluation per episode with variable auction price and soc retain} }
+		\label{fig:comparison_ppo_sac_td3_combined_soc_retain}
+	\end{center}
+\end{figure}
+
+While testing of the learned policy reinforced by this combined reward, each model retains the desired amount but the cost optimization is hindered as shown in the table \ref{table:comparison_variable_ap_soc_retain} \\
+
+% sac
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/soc_retain/sac/test/sac_rbc_comparison.png}
+		\caption{ \textit{Agents sample action from SAC policy with variable auction price and soc retain}}
+		\label{fig:test_compare_soc_retain_sac}
+	\end{center}
+\end{figure}
+
+% td3
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{observation/soc_retain/ppo/test/ppo_rbc_comparison.png}
+		\caption{ \textit{Agents sample action from PPO policy with variable auction price and soc retain}}
+		\label{fig:test_compare_soc_retain_ppo}
+	\end{center}
+\end{figure}
+
+The figures \ref{fig:test_compare_soc_retain_sac}, \ref{fig:test_compare_soc_retain_ppo} show that, regardless of hindrance in average cost minimization, both policies show some pattern of reflected variability in the observation input for SAC and PPO respectively. The patterns are most visible in SAC, which resonates with the relatively higher value than other RL based strategies. The TD3 has barely improved on from the random state of initialization. \\
+
+Overall, these observations show that the objective of retaining SoC is met, but the average cost of exchange is not minimized, indicating that the improvement in cost contribution could be made with searching for better definition of reward function and balanced composition of combined rewards constituents. \\
+
+\begin{table}
+	% ------------------------------------------------------------------------------
+\begin{center}
+	\begin{tabular}{ccccc} 
+		\hline % -------------------------------------------------------------
+		\vspace{0.5pt} \\
+		\textbf{Model Config} & \textbf{PPO} & \textbf{SAC} & \textbf{TD3} \\ % Header
+		\hline % -------------------------------------------------------------
+		\vspace{0.5pt} \\
+		\textbf{Untrained} & 91.371 & 91.371  & 91.371 \\
+		\textbf{Variable AP and SoC retain} & 98.325 & \textbf{109.296}  & 93.987 \\
+		\hline % -------------------------------------------------------------
+	\end{tabular}
+	\caption{ comparison per policy with variable exchange rate}
+	\label{table:comparison_variable_ap_soc_retain}
+	
+\end{center}
+\end{table}
+	
+\end{large}
+% ------------------------------------------------------------------------------------

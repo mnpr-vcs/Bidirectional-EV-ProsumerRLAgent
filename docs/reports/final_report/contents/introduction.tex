@@ -1,0 +1,52 @@
+\chapter{Introduction}\label{ch-1}
+% ------------------------------------------------------------------------------------
+% Introduction
+% ------------------------------------------------------------------------------------
+
+\begin{large}
+% ............................................................................
+
+\section{Background}
+
+In recent years, due to increasing adoption of renewable energy sources and awareness of it's impact on mitigation of issues caused by climate change, industries and households are transforming towards climate neutrality. United efforts of countries around the world such as Paris Climate Agreement\cite{parisagreement}(PCA), signed by $195$ countries, to deal with climate change issues, define collective and national goals in short and long terms. Main goals of the PCA agreement include reduction of average global temperature below $2^\circ C$, transparency on progress, awareness programs, and regular assessment of the united goals. Climate Neutral Act \cite{climateact} defines goal to achieve green house gas neutrality by 2050 for Germany, enforcing threshold on permissible emission of $CO_{2}$ on sectors such as energy, transport, and other industries. The energy industry is progressively transitioning from conventional to renewable energy sources in Germany as indicated by the positive trend in figure \ref{fig:energy_gen_de}\\
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.9\textwidth]{analytics/energy_gen_per_year.png}
+		\caption{\textit{Energy generation in Germany per year [2002-2023]} src:\cite{energychartsinfo} }
+		\label{fig:energy_gen_de}
+	\end{center}
+\end{figure}
+
+
+This trend is reflected in increasing adoption and integration of renewable sources of energy within households. Traditionally household demand were met solely from the grid, which depended mostly on the generation of energy from conventional sources. With the integration Photo Voltaics(PV), households are not only able to meet partial demand by relying on self-generated energy, but are also able to participate in market by feeding excess back to the grid. These household with bidirectional power exchange to the grid are termed as Prosumers(consumer-producer).
+
+The concept of Prosumer household introduced shift in some responsibility of energy management from centralized distribution hubs to the end user, resulting in Energy Management System(EMS) within Household. The term EMS was first pointed out during the rise of personal computing platform\cite{sems}. Home Energy Management System(HEMS) includes sensing, monitoring, communication and control of load consumption, generated PV, and Energy Storage Systems(ESS) in order to optimize user defined objectives such as minimization of net energy cost, reduced grid dependency, comfort, and emission minimization. \\
+
+Electric Vehicles(EVs), in recent years, has been increasingly integrated within HEMS. \cite{evess} Proposes HEMS integrated with PV, EV and ESS with excess grid feed back. EVs with bidirectional power flow in Electric Vehicles Supply Equipment(EVSE) allows the EVs to be used as a distributed energy storage asset and brings forth opportunities and application for energy exchange to household, participation in grid demand response and energy consumption optimization. \\
+
+
+Conventionally HEMS were used in the form of analytics and visualization, making the user aware of their consumption and thereby aiding conscious use of household appliances and perform manual scheduling. Rule based scheduling were adopted to include optimization based on pre-defined criteria and thresholds to partially automate control. With advancement in technology, optimization based techniques such as Linear programming(LP) and Mixed Integer Linear Programming(MILP) methods were used to find the best outcome in a scenario, such as optimization of energy consumption and production under constraints like battery capacity and grid limitations. \cite{milp} Utilizes MILP to reduce dissatisfaction and cost of consumers considering EES and Plug-In EVs(PEV). Recent approaches include Dynamic Programming(DP) for optimization objectives such as charging and scheduling strategies based on sequential decision-making. \cite{dphev} Demonstrates a case study on optimization of rule-based strategies in Hybrid Elecric Vehicles(HEV) using DP. Model Predictive Control(MPC), use modeling, prediction of future dynamics, and suggest control strategies. Rule-based approaches often lack adaptability and may not capture complex dynamics. Optimization methods require accurate modeling of dynamics of the system and can be computationally expensive. While MPC approaches offer promising results, they often require large datasets and may not generalize well to unseen scenarios.
+
+RL offers a unique advantage in directly learning optimal control strategies through trial and error, interaction with the environment, making it suitable for handling real-time decision making under uncertainty. \cite{qlearning} uses Q-Learning based scheduling and control of HEMS component with ESS charging and discharging to reduce consumption cost while maintaining user comfort. \cite{drlgym} Provides optimized control method using RL with distributed flexible assets within private households and provides a practitioner guide on implementing such a system. \\ 
+
+\section{Objective}
+
+Optimizing energy flow between the HEMS components while considering dynamic pricing, varying solar generation, distributed and local energy storage system remains a significant challenge. This undertaking focuses on an application domain of a household environment in Germany, integrated with Photo Voltaic(PV) energy generation and energy storage system, exchanging energy with the grid to meet household demand under variable exchange tarrifs(Eur/Kwh). A bidirectional power transfer to and from the energy storage as control action, with the objective of reducing the net exchange cost to a grid by learning useful control strategies using Deep Reinforcement Learning(DRL). \\
+
+\section{Research Questions}
+
+With the objective of learning useful strategies for reduction of net exchange energy cost within a household, several research question were explored. This includes the possibility of modeling of HEMS control system as a Prosumer RL Agent, impact of selection of algorithm on performance of the system and factors influencing the learned strategies by an Agent. Following list outlines the question more concretely. 
+
+\begin{itemize}
+	\item How can Prosumer Agents be modeled in a  Reinforcement Learning
+		environment?
+	\item Can RL effectively minimize cost of energy under time-variable tarrifs ?
+	\item How does the choice of RL algorithm impact  performance of the control system ?
+	\item What are the key factors influencing the optimal control strategies learned by the RL agent?
+\end{itemize}
+
+Within the scope of addressing these questions and optimizing the objective, remainder of the document is organized as follows. Section \ref{ch-2} describes methodology and underlying theoretical framework based on defined objectives. Section \ref{ch-3} describes different components involved in development of experimentation framework to model, test and collect observations. Section \ref{ch-4} explores the resulting observation, their interpretation and relevance on answering the research questions. Final Section \ref{ch-5} compares and contrasts on the objective and the achieved outcomes. \\
+
+%............................................................................
+\end{large}

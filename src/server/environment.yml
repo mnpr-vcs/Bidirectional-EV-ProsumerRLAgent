@@ -1,0 +1,14 @@
+name: model-server
+dependencies:
+  - python=3.10
+  - numpy<2.0.0
+  - pip
+  - pip:
+    - onnx
+    - onnxruntime
+    - flask
+    - stable-baselines3
+    - torch
+
+channels:
+  - conda-forge
