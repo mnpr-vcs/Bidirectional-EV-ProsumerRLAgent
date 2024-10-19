@@ -1,4 +1,4 @@
-This repository contains Master Projectwork ⬇️ undertaken for the partial fulfillment of M.S. in Information Engineering @Fachhochschule-Kiel under the supervision of Prof. Dr. Hauke Schramm and Mr. Vincenz Regener.
+This repository contains Master Thesiswork ⬇️ undertaken for the partial fulfillment of M.S. in Information Engineering @Fachhochschule-Kiel under the supervision of Prof. Dr. Hauke Schramm and Mr. Vincenz Regener.
 
 # Prosumer-HEMS-RLpy 
 
